@@ -24,7 +24,7 @@ class StellarRadioAlg:
         # self.guidingc = parser.get('FIGS','guidingc')
         # self.axisfsize = parser.get('FIGS','axisfsize')
         # self.figsizerect = parser.get('FIGS','figsizerect')
-        #self.figsizesq = parser.get('FIGS','figsizesq')
+        # self.figsizesq = parser.get('FIGS','figsizesq')
         # self.ylim = parser.get('FIGS','ylim')
         # self.xlim = parser.get('FIGS','xlim')
 
