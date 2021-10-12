@@ -13,11 +13,12 @@ class StellarRadioAlg:
         parser = configparser.ConfigParser()
         parser.read('stellar.cfg')
         self.kic = int(parser.get('STARQUALS','kic'))
-        self.period = float(parser.get('FIGS','period'))
         self.bandwidth = float(parser.get('MATH','bandwidth'))
         self.amp0 = float(parser.get('MATH','amp0'))
         self.phase0 = float(parser.get('MATH','phase0'))
         self.iters = int(parser.get('MATH','iters'))
+        self.period = float(parser.get('FIGS','period'))
+
         # self.alphap = parser.get('FIGS','alphap')
         # self.datac = parser.get('FIGS','datac')
         # self.resultc = parser.get('FIGS','resultc')
@@ -231,7 +232,6 @@ class StellarRadioAlg:
         plt.xlim(3,1000)
         plt.ylim(1e-3, 1e-1)
         plt.axvline(372.5,c='r',alpha=.5,label="kepler orbital period")
-        if self.period:
-            plt.axvline(self.period,c='g',alpha=.5,label="expected frequency peak")
+        plt.axvline(self.period,c='g',alpha=.5,label="expected frequency peak")
         plt.legend()
-        plt.savefig('./stellar_radio_plot.pdf')
+        plt.savefig('./stellar_radio_plot_kic{}.pdf'.format(self.kic))
