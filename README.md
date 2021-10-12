@@ -1,7 +1,7 @@
 # StellarRadio
 Tuning a Stellar Radio - Updated Code October 11 2021
 
-Steps for running StellarRadioAlgorithm.py:
+Steps for running StellarRadioAlgorithm.py: <br />
     1. Open terminal <br />
     2. Import alg class: "from StellarRadioAlgorithm import StellarRadioAlg" <br />
     3. Write "run = StellarRadioAlg()" to instantiate class <br />
