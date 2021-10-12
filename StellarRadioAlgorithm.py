@@ -32,7 +32,7 @@ class StellarRadioAlg:
         """Finds frequency based off of LombScargle peaks.
 
         Returns:
-            f0_guess(float): Frequency estimate that is improved upon in optimization step.
+            f0_guess (float): Frequency estimate that is improved upon in optimization step.
         """
         time, flux, flerr, quarter = self.get_lc_data()
         for item in (time,flux,flerr,quarter):
@@ -50,10 +50,10 @@ class StellarRadioAlg:
         """Gets light curve data using Lightkurve.
 
         Returns:
-            time(np.ndarray): Time data.
-            flux(np.ndarray): Flux data.
-            flerr(np.ndarray): Flux-error data.
-            quarter(np.ndarray): Number of light curves.
+            time (np.ndarray): Time data.
+            flux (np.ndarray): Flux data.
+            flerr (np.ndarray): Flux-error data.
+            quarter (np.ndarray): Number of light curves.
         """
         if type(self.kic) == str:
             lc_files = lk.search_lightcurve('KIC'+self.kic, cadence='long').download_all()
@@ -218,7 +218,6 @@ class StellarRadioAlg:
     def run_all_steps(self):
         """Runs algorithm steps in order, which ends in plotting a LombScargle
         periodogram of time vs simmf.
-
         """
         time,flux,flerr,quarter = self.get_lc_data()
 
@@ -233,7 +232,6 @@ class StellarRadioAlg:
         self.lombscargle_periodogram(time,simmf)
         plt.xlim(3,1000)
         plt.ylim(1e-3, 1e-1)
-        #plt.axvline(9.158,c='g',alpha=.5,label="%d day period" % self.expected_period)
         plt.axvline(372.5,c='r',alpha=.5,label="kepler orbital period")
         if self.period:
             plt.axvline(self.period,c='g',alpha=.5,label="expected frequency peak")
