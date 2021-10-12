@@ -22,17 +22,17 @@ class StellarRadioAlg:
         # self.datac = parser.get('FIGS','datac')
         # self.resultc = parser.get('FIGS','resultc')
         # self.guidingc = parser.get('FIGS','guidingc')
-        #self.axisfsize = parser.get('FIGS','axisfsize')
-        #self.figsizerect = parser.get('FIGS','figsizerect')
+        # self.axisfsize = parser.get('FIGS','axisfsize')
+        # self.figsizerect = parser.get('FIGS','figsizerect')
         #self.figsizesq = parser.get('FIGS','figsizesq')
         # self.ylim = parser.get('FIGS','ylim')
         # self.xlim = parser.get('FIGS','xlim')
 
     def freq_finder(self):
-        """[summary]
+        """Finds frequency based off of LombScargle peaks.
 
         Returns:
-            [type]: [description]
+            f0_guess(float): Frequency estimate that is improved upon in optimization step.
         """
         time, flux, flerr, quarter = self.get_lc_data()
         for item in (time,flux,flerr,quarter):
@@ -50,10 +50,10 @@ class StellarRadioAlg:
         """Gets light curve data using Lightkurve.
 
         Returns:
-            time[type]: [description]
-            flux[]
-            flerr[]
-            quarter[]:
+            time(np.ndarray): Time data.
+            flux(np.ndarray): Flux data.
+            flerr(np.ndarray): Flux-error data.
+            quarter(np.ndarray): Number of light curves.
         """
         if type(self.kic) == str:
             lc_files = lk.search_lightcurve('KIC'+self.kic, cadence='long').download_all()
@@ -68,7 +68,7 @@ class StellarRadioAlg:
                 long_curves.append(lc)
             else:
                 short_curves.append(lc)
-        ###    
+            
         time, flux, flerr, quarter = np.array([]), np.array([]), np.array([]), np.array([])
         for q,lc in enumerate(long_curves):
 
@@ -97,16 +97,16 @@ class StellarRadioAlg:
         return time,flux,flerr,quarter
 
     def bandpass_filter(self,flux,time,quarters,f0):
-        """[summary]
+        """Performs bandpass filter on flux data.
 
         Args:
-            flux ([type]): [description]
-            time ([type]): [description]
-            quarters ([type]): [description]
-            f0 ([type]): [description]
+            flux (np.ndarray): Flux data.
+            time (np.ndarray): Time data.
+            quarters (np.ndarray): Quarter data. ?? Bad description
+            f0 (float): Non-optimized frequency guess.
 
         Returns:
-            [type]: [description]
+            flux (np.ndarray): Bandpass-filtered flux data.
         """
         q_sort = np.unique(np.sort(quarters))
         for quarter in q_sort:
@@ -126,15 +126,18 @@ class StellarRadioAlg:
         return flux
 
     def mix(self,time,flux,f0):
-        """[summary]
+        """Mix flux. ? Bad description
 
         Args:
-            time ([type]): [description]
-            flux ([type]): [description]
-            f0 ([type]): [description]
+            time (np.ndarray): Time data.
+            flux (np.ndarray): Flux data.
+            f0 (float): Frequency guess.
 
         Returns:
-            [type]: [description]
+            remf (np.ndarray): Real components of mixer multiplied by flux.
+            immf (np.ndarray): Imaginary components of mixer multiplied by flux.
+            sremf (np.ndarray): Gaussian-filtered remf.
+            simmf (np.ndarray): Gaussian-filtered immf.
         """
         mixer = self.amp0 * np.exp(1j * (2 * np.pi * f0 * time - self.phase0))
         mf = mixer * flux
@@ -145,14 +148,14 @@ class StellarRadioAlg:
         return remf,immf,sremf,simmf
 
     def objective(self,f,time,flux,amp,phase):
-        """[summary]
+        """Gets variance of imaginary component of the mixer multiplied by flux.
 
         Args:
-            f ([type]): [description]
-            time ([type]): [description]
-            flux ([type]): [description]
-            amp ([type]): [description]
-            phase ([type]): [description]
+            f (float): Frequency
+            time (np.ndarray): Time data.
+            flux (np.ndarray): Flux data.
+            amp (float): Amplitude value.
+            phase (float): Phase value.
 
         Returns:
             [type]: [description]
@@ -165,12 +168,16 @@ class StellarRadioAlg:
         """Frequency optimization iterations.
 
         Args:
-            time ([type]): [description]
-            flux ([type]): [description]
-            f0 ([type]): [description]
+            time (np.ndarray): Time data.
+            flux (np.ndarray): Flux data.
+            f0 (float): Frequency guess.
 
         Returns:
-            [type]: [description]
+            remf (np.ndarray): Optimized real components of mixer multiplied by flux.
+            immf (np.ndarray): Optimized imaginary components of mixer multiplied by flux.
+            sremf (np.ndarray): Optimized Gaussian-filtered remf.
+            simmf (np.ndarray): Optimized Gaussian-filtered immf.
+            output (?): Output of Nelder-Mead minimization.
         """
         for i in range(self.iters):
             print("Iteration", i)
@@ -197,24 +204,21 @@ class StellarRadioAlg:
         """Sets up plot for final LombScargle periodogram.
 
         Args:
-            time ([type]): [description]
-            simmf ([type]): [description]
+            time (np.ndarray): [description]
+            simmf (np.ndarray): Optimized Gaussian-filtered immf.
 
         """
         q,y = LombScargle(time,simmf).autopower()
         plt.plot(1./q,y)
         plt.xlabel("Period (days)")
         plt.ylabel("LombScargle")
-        #plt.axvline(c = 'g', alpha = .5)
         plt.grid()
         plt.loglog()
 
     def run_all_steps(self):
-        """Runs algorithm steps in order.
+        """Runs algorithm steps in order, which ends in plotting a LombScargle
+        periodogram of time vs simmf.
 
-        Args:
-
-        Returns:
         """
         time,flux,flerr,quarter = self.get_lc_data()
 
