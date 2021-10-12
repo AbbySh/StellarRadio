@@ -116,8 +116,6 @@ class StellarRadioAlg:
             this_time = time[I]
             fft_flux = fft(_flux)
             fftfreq_time = fftfreq(len(_flux)) / np.nanmedian(this_time[1:] - this_time[:-1])
-            print('cheese',3*self.bandwidth)
-            print('walnut',np.abs(np.abs(fftfreq_time) - f0))
             _filter = np.abs(np.abs(fftfreq_time) - f0) > 3 * self.bandwidth
             fft_flux[_filter] = 0.
             
