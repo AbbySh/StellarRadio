@@ -158,7 +158,7 @@ class StellarRadioAlg:
             phase (float): Phase value.
 
         Returns:
-            [type]: [description]
+            np.var(mf.imag) (np.ndarray): Variance of imaginary component of mixer multiplied by float.
         """
         mixer = amp * np.exp(1j * (2 * np.pi * f * time - phase))
         mf = mixer * flux
